@@ -2,7 +2,7 @@
   <div>
     <Card noborder>
       <div class="md:flex justify-between pb-6 md:space-y-0 space-y-3 items-center">
-        <h5>System Users</h5>
+        <h5>Procurement Project Management Plans</h5>
 
         <InputGroup
           v-model="searchTerm"
@@ -13,17 +13,17 @@
         />
         <Button
           icon="heroicons-outline:plus-sm"
-          text="Add System User"
-          btnClass=" btn-dark font-normal btn-sm "
+          text="Add New PPMP"
+          btnClass=" btn-dark font-normal btn-sm"
           iconClass="text-lg"
-          link="system-users-add"
+          link="ppmp"
         />
       </div>
 
       <vue-good-table
         :columns="columns"
         styleClass=" vgt-table bordered centered"
-        :rows="users"
+        :rows="ppmp"
         :pagination-options="{
           enabled: true,
           perPage: perpage,
@@ -43,60 +43,45 @@
         }"
       >
         <template v-slot:table-row="props">
-          <span v-if="props.column.field == 'fullname'" class="flex">
-            <span class="w-7 h-7 rounded-full ltr:mr-3 rtl:ml-3 flex-none">
-              <img
-                :src="props.row.image"
-                :alt="props.row.name"
-                class="object-cover w-full h-full rounded-full"
-              />
-            </span>
+          <span v-if="props.column.field == 'calendaryear'" class="block w-full">
             <span class="text-sm text-slate-600 dark:text-slate-300 capitalize">{{
-              props.row.name
+              props.row.calendaryear
             }}</span>
           </span>
 
           <span
-            v-if="props.column.field == 'role'"
-            class="text-slate-500 dark:text-slate-300"
+            v-if="props.column.field == 'projectTitle'"
+            class="text-slate-500 dark:text-slate-300 block w-full"
           >
-            {{ props.row.role }}
+            {{ props.row.projectTitle }}
           </span>
 
-          <span v-if="props.column.field == 'status'" class="block w-full">
-            <span
-              class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25"
-              :class="`${
-                props.row.status === 'Active' ? 'text-success-500 bg-success-500' : ''
-              } 
-            ${props.row.status === 'Suspended' ? 'text-warning-500 bg-warning-500' : ''}
-            ${props.row.status === 'Inactive' ? 'text-danger-500 bg-danger-500' : ''}
-            
-             `"
+          <span v-if="props.column.field == 'fundsource'" class="block w-full">
+            {{ props.row.fundsource }}
+          </span>
+          <span v-if="props.column.field == 'manageitems'">
+            <router-link
+              :to="`ppmp-items?id=` + props.row.id"
+              class="text-info-500 hover:text-warning-500"
             >
-              {{ props.row.status }}
-            </span>
+              Manage Items
+            </router-link>
           </span>
           <span v-if="props.column.field == 'action'">
             <div class="flex space-x-3 rtl:space-x-reverse">
-              <Tooltip placement="top" arrow theme="dark">
+              <!--Tooltip placement="top" arrow theme="dark">
                 <template #button>
-                  <div
-                    class="action-btn"
-                    @click="
-                      $refs.viewModal.openModal(); selectView(props.row.id, props.row.name, props.row.email, props.row.department_name, props.row.role_name, props.row.status);
-                    "
-                  >
+                  <div class="action-btn" @click="$refs.modal1.openModal()">
                     <Icon icon="heroicons:eye" />
                   </div>
                 </template>
                 <span> View</span>
-              </Tooltip>
+              </Tooltip-->
 
               <Tooltip placement="top" arrow theme="dark">
                 <template #button>
                   <div class="action-btn">
-                    <RouterLink :to="'system-users-edit?id=' + props.row.id">
+                    <RouterLink :to="'ppmp-edit?id=' + props.row.id">
                       <Icon icon="heroicons:pencil-square" />
                     </RouterLink>
                   </div>
@@ -105,14 +90,9 @@
               </Tooltip>
               <Tooltip placement="top" arrow theme="danger-500">
                 <template #button>
-                  <div
-                  class="action-btn"
-                  @click="
-                    $refs.deleteModal.openModal(); selectDelete(props.row.id);
-                  "
-                >
-                  <Icon icon="heroicons:trash" />
-                </div>
+                  <div class="action-btn" @click="$refs.deleteModal.openModal(); selectDelete(props.row.id)">
+                    <Icon icon="heroicons:trash" />
+                  </div>
                 </template>
                 <span>Delete</span>
               </Tooltip>
@@ -121,47 +101,53 @@
                 title="View User Details"
                 label="User Details"
                 labelClass="btn-outline-success"
-                ref="viewModal"
+                ref="modal1"
               >
-              <div class="flex flex-row">
-                <div class="w-1/2">
-                  <!-- Personal info goes here -->
-                  <p><b>Name:</b></p>
-                  <p><b>Email Address:</b></p>
-                  <!-- Other personal info fields -->
-                  <div class="border-b border-gray-300 my-4"></div>
-                  <p><b>Department:</b></p>
-                  <p><b>System User Role:</b></p> 
-                  <p><b>Status:</b></p> 
+                <div class="flex flex-row">
+                  <div class="w-1/2">
+                    <!-- Personal info goes here -->
+                    <p><b>Name:</b></p>
+                    <p><b>Email Address:</b></p>
+                    <p><b>Phone:</b></p>
+                    <!-- Other personal info fields -->
+                    <div class="border-b border-gray-300 my-4"></div>
+                    <p><b>Department:</b></p>
+                    <p><b>Assigned Office:</b></p>
+                    <div class="border-b border-gray-300 my-4"></div>
+                    <p><b>System User Role:</b></p>
+                    <p><b>Status:</b></p>
+                  </div>
+                  <div class="w-1/2">
+                    <!-- Values go here -->
+                    <p>John Doe</p>
+                    <p>john.doe@example.com</p>
+                    <p>123-456-7890</p>
+                    <!-- Other value fields -->
+                    <div class="border-b border-gray-300 my-4"></div>
+                    <p>----</p>
+                    <p>----</p>
+                    <div class="border-b border-gray-300 my-4"></div>
+                    <p>----</p>
+                    <p>----</p>
+                  </div>
                 </div>
-                <div class="w-1/2">
-                  <!-- Values go here -->
-                  <p>{{ selectedUser.name }}</p>
-                  <p>{{ selectedUser.email }}</p>
-                  <!-- Other value fields -->
-                  <div class="border-b border-gray-300 my-4"></div>
-                  <p>{{ selectedUser.department_name }}</p>
-                  <p>{{ selectedUser.role_name }}</p>
-                  <p>{{ selectedUser.status }}</p>
-                </div>
-              </div>
-                
+
                 <template v-slot:footer>
                   <Button
                     text="Close"
                     btnClass="btn-outline-dark "
-                    @click="$refs.viewModal.closeModal()"
+                    @click="$refs.modal1.closeModal()"
                   />
-                  
                 </template>
               </Modal>
               <Modal
-                title="Delete User"  
+                title="Delete User"
                 label="User Delete"
                 labelClass="btn-outline-success"
                 ref="deleteModal"
               >
-              <p  ><b>Are you sure you want to delete this user?</b></p>
+                <p><b>Are you sure you want to delete this PPMP record?</b></p>
+
                 <template v-slot:footer>
                   <Button
                     text="Close"
@@ -169,11 +155,10 @@
                     @click="$refs.deleteModal.closeModal()"
                   />
                   <Button
-                  text="Yes, delete"
-                  btnClass="btn-success "
-                  @click="$refs.deleteModal.closeModal(); submitDelete()"
-                />
-                
+                    text="Yes, delete"
+                    btnClass="btn-success "
+                    @click="$refs.deleteModal.closeModal(); submitDelete()"
+                  />
                 </template>
               </Modal>
             </div>
@@ -213,7 +198,7 @@ import Modal from "@/components/Modal/Modal";
 import Textinput from "@/components/Textinput";
 
 import { MenuItem } from "@headlessui/vue";
-import fullname1 from "@/assets/images/all-img/customer_1.png";
+//import fullname1 from "@/assets/images/all-img/customer_1.png";
 
 import { useToast } from "vue-toastification";
 
@@ -237,20 +222,15 @@ export default {
 
   data() {
     return {
-      selectedUser: {
-        id: "",
-        name: "",
-        email: "",
-        department_name: "",
-        role_name: "",
-        status: ""
+      selectedPpmp: {
+        id: ""
       },
-      users: [],
       current: 1,
       perpage: 10,
       pageRange: 5,
       searchTerm: "",
-      permissions: JSON.parse(localStorage.permissions),
+      ppmp: [],
+
       options: [
         {
           value: "1",
@@ -266,33 +246,32 @@ export default {
         },
       ],
       columns: [
-        {
-          label: "Id",
-          field: "id",
-        },
-        {
-          label: "Full Name",
-          field: "name",
-        },
-        {
-          label: "Role",
-          field: "role_name",
-        },
-
-        {
-          label: "Department",
-          field: "department_name",
-        },
-
-        {
-          label: "Status",
-          field: "status",
-        },
-
         // {
-        //   label: "Status",
-        //   field: "status",
+        //   label: "Id",
+        //   field: "id",
         // },
+        {
+          label: "Calendar Year",
+          field: "calendar_year",
+        },
+        {
+          label: "Project Title",
+          field: "project_title",
+        },
+
+        {
+          label: "PMO/End-User/Department",
+          field: "pmo_end_user_dept",
+        },
+
+        {
+          label: "Source of Fund",
+          field: "source_of_fund",
+        },
+        {
+          label: "Items",
+          field: "manageitems",
+        },
         {
           label: "Action",
           field: "action",
@@ -302,10 +281,12 @@ export default {
   },
 
   methods: {
-    showPerms: function() {
-      console.log(this.permissions)
+
+    selectDelete: function(id){
+      this.selectedPpmp.id = id
     },
-    getUsers: function () {
+
+    getPpmp: function () {
       const token = JSON.parse(localStorage.jwt);
       if(token){
         axios.defaults.headers = {
@@ -314,26 +295,13 @@ export default {
         }  
       }
 
-      axios.get(apiEndPoint + "/api/users")
+      axios.get(apiEndPoint + "/api/ppmps")
         .then((response) => {
-          this.users = response.data;
+          this.ppmp = response.data;
         })
         .catch((error) => {
 
         });
-    },
-
-    selectDelete: function(id){
-      this.selectedUser.id = id
-    },
-
-    selectView: function(id, name, email, department_name, role_name, status){
-      this.selectedUser.id = id
-      this.selectedUser.name = name
-      this.selectedUser.email = email
-      this.selectedUser.department_name = department_name
-      this.selectedUser.role_name = role_name
-      this.selectedUser.status = status
     },
 
     submitDelete: function() {
@@ -347,10 +315,10 @@ export default {
         }  
       }
 
-      axios.delete(apiEndPoint + '/api/remove_user/' + this.selectedUser.id)
+      axios.delete(apiEndPoint + '/api/remove_ppmp/' + this.selectedPpmp.id)
         .then((response) => {
           // router.push("/app/system-users");
-          this.getUsers();
+          this.getPpmp();
           toast.success(" Data removed.", {
             timeout: 2000,
           });
@@ -364,8 +332,7 @@ export default {
   },
 
   mounted () {
-    this.getUsers();
-    this.showPerms();
+    this.getPpmp();
   }
 };
 </script>

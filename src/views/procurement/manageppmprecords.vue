@@ -2,7 +2,7 @@
   <div>
     <Card noborder>
       <div class="md:flex justify-between pb-6 md:space-y-0 space-y-3 items-center">
-        <h5>List of Purchase Requests</h5>
+        <h5>Procurement Project Management Plans</h5>
 
         <InputGroup
           v-model="searchTerm"
@@ -10,13 +10,6 @@
           type="text"
           prependIcon="heroicons-outline:search"
           merged
-        />
-        <Button
-          icon="heroicons-outline:plus-sm"
-          text="Submit New Purchase Request"
-          btnClass=" btn-dark font-normal btn-sm"
-          iconClass="text-lg"
-          link="submit-pr"
         />
       </div>
 
@@ -43,71 +36,100 @@
         }"
       >
         <template v-slot:table-row="props">
-          <span v-if="props.column.field == 'pr_num'" class="flex">
+          <span v-if="props.column.field == 'calendaryear'" class="block w-full">
             <span class="text-sm text-slate-600 dark:text-slate-300 capitalize">{{
-              props.row.pr_num
+              props.row.calendaryear
             }}</span>
           </span>
-          <span v-if="props.column.field == 'dept'" class="dark:text-slate-300">
-            <div class="flex-1 text-start">
-              <h4 class="text-sm font-medium text-slate-600 whitespace-nowrap">
-                {{ props.row.dept }}
-              </h4>
-              <div class="text-xs font-normal text-info-600 dark:text-slate-400">
-                <i>Section: {{ props.row.section }}</i>
-              </div>
-            </div>
+
+          <span
+            v-if="props.column.field == 'projectTitle'"
+            class="text-slate-500 dark:text-slate-300 block w-full"
+          >
+            {{ props.row.projectTitle }}
           </span>
-          <span v-if="props.column.field == 'req-items'" class="space-x-3">
-            <Button
-              icon="heroicons-outline:queue-list"
-              text="Request Items"
-              btnClass=" btn-primary font-normal btn-sm"
-              iconClass="text-lg"
-              link="request-items-for-pr"
-            />
+
+          <span v-if="props.column.field == 'fundsource'" class="block w-full">
+            {{ props.row.fundsource }}
           </span>
-          <span v-if="props.column.field == 'status'" class="block w-full">
-            <span
-              class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-xs"
-              :class="`${
-                props.row.status === 'Approved by'
-                  ? 'text-success-500 bg-success-500'
-                  : ''
-              } 
-          ${props.row.status === 'Rejected' ? 'text-warning-500 bg-warning-500' : ''} 
-          
-           `"
+          <span v-if="props.column.field == 'manageitems'">
+            <router-link
+              :to="`view-items?id=` + props.row.id"
+              class="text-info-500 hover:text-warning-500"
             >
-              {{ props.row.status }}
-            </span>
+              {{ props.row.manageitems }}
+            </router-link>
           </span>
           <span v-if="props.column.field == 'action'">
-            <div class="flex space-x-3 rtl:space-x-reverse justify-center">
-              <Tooltip placement="top" arrow theme="dark">
+            <div class="flex space-x-3 rtl:space-x-reverse">
+              <!--Tooltip placement="top" arrow theme="dark">
                 <template #button>
-                  <RouterLink :to="'update-pr/' + props.row.id">
-                    <Icon icon="heroicons:pencil-square" />
-                  </RouterLink>
+                  <div class="action-btn" @click="$refs.modal1.openModal()">
+                    <Icon icon="heroicons:eye" />
+                  </div>
                 </template>
-                <span> Edit</span>
-              </Tooltip>
+                <span> View</span>
+              </Tooltip-->
+
               <Tooltip placement="top" arrow theme="dark">
                 <template #button>
                   <div class="action-btn" @click="$refs.modal2.openModal()">
-                    <Icon icon="heroicons:trash" />
+                    <Button text="Mark as Received" btnClass="btn-dark btn-sm " />
                   </div>
                 </template>
-                <span>Cancel</span>
+                <span>Receive</span>
               </Tooltip>
 
               <Modal
-                title="Cancel Request"
-                label="Item Remove"
+                title="View User Details"
+                label="User Details"
+                labelClass="btn-outline-success"
+                ref="modal1"
+              >
+                <div class="flex flex-row">
+                  <div class="w-1/2">
+                    <!-- Personal info goes here -->
+                    <p><b>Name:</b></p>
+                    <p><b>Email Address:</b></p>
+                    <p><b>Phone:</b></p>
+                    <!-- Other personal info fields -->
+                    <div class="border-b border-gray-300 my-4"></div>
+                    <p><b>Department:</b></p>
+                    <p><b>Assigned Office:</b></p>
+                    <div class="border-b border-gray-300 my-4"></div>
+                    <p><b>System User Role:</b></p>
+                    <p><b>Status:</b></p>
+                  </div>
+                  <div class="w-1/2">
+                    <!-- Values go here -->
+                    <p>John Doe</p>
+                    <p>john.doe@example.com</p>
+                    <p>123-456-7890</p>
+                    <!-- Other value fields -->
+                    <div class="border-b border-gray-300 my-4"></div>
+                    <p>----</p>
+                    <p>----</p>
+                    <div class="border-b border-gray-300 my-4"></div>
+                    <p>----</p>
+                    <p>----</p>
+                  </div>
+                </div>
+
+                <template v-slot:footer>
+                  <Button
+                    text="Close"
+                    btnClass="btn-outline-dark "
+                    @click="$refs.modal1.closeModal()"
+                  />
+                </template>
+              </Modal>
+              <Modal
+                title="Mark as Received"
+                label="Received"
                 labelClass="btn-outline-success"
                 ref="modal2"
               >
-                <p><b>Are you sure you want to cancel request?</b></p>
+                <p><b>Mark this PPMP record as RECEIVED?</b></p>
 
                 <template v-slot:footer>
                   <Button
@@ -116,7 +138,7 @@
                     @click="$refs.modal2.closeModal()"
                   />
                   <Button
-                    text="Yes, cancel"
+                    text="Yes, mark as received"
                     btnClass="btn-success "
                     @click="$refs.modal2.closeModal()"
                   />
@@ -160,7 +182,7 @@ import Textinput from "@/components/Textinput";
 
 import { MenuItem } from "@headlessui/vue";
 import { advancedTable } from "../../constant/basic-tablle-data";
-import fullname1 from "@/assets/images/all-img/customer_1.png";
+//import fullname1 from "@/assets/images/all-img/customer_1.png";
 
 export default {
   components: {
@@ -185,21 +207,11 @@ export default {
       advancedTable: [
         {
           id: 1,
-          pr_num: "1",
-          fund: "-",
-          dept: "City Administrator's Office",
-          section: "A",
-          fpp: "-",
-          status: "Approved by",
-        },
-        {
-          id: 2,
-          pr_num: "2",
-          fund: "-",
-          dept: "City Administrator's Office",
-          section: "B",
-          fpp: "-",
-          status: "Approved by",
+          calendaryear: "2023",
+          projectTitle: "Maintenance and Other Operating Expenses (MOOE)",
+          endUser: "City Information and Communications Technology (CICTO)",
+          fundsource: "General Fund",
+          manageitems: "Check Items",
         },
       ],
       current: 1,
@@ -222,36 +234,32 @@ export default {
         },
       ],
       columns: [
+        // {
+        //  label: "Id",
+        //    field: "id",
+        //  },
         {
-          label: "PR Number",
-          field: "pr_num",
+          label: "Calendar Year",
+          field: "calendaryear",
         },
         {
-          label: "FPP",
-          field: "fpp",
+          label: "Project Title",
+          field: "projectTitle",
+        },
+
+        {
+          label: "PMO/End-User/Department",
+          field: "endUser",
         },
 
         {
-          label: "Fund",
-          field: "fund",
+          label: "Source of Fund",
+          field: "fundsource",
         },
         {
-          label: "Date Requested",
-          field: "fund",
+          label: "Items",
+          field: "manageitems",
         },
-        {
-          label: "Department/Section",
-          field: "dept",
-        },
-        {
-          label: "ITEM REQUESTS",
-          field: "req-items",
-        },
-        {
-          label: "Status",
-          field: "status",
-        },
-
         {
           label: "Action",
           field: "action",

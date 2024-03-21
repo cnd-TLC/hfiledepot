@@ -73,6 +73,7 @@ const routes = [
     redirect: "/app/home",
     component: () => import("@/Layout/index.vue"),
     meta: {
+      activeLink: "Dashboard",
       middleware: [auth],
     },
     children: [
@@ -119,20 +120,175 @@ const routes = [
         component: () => import("@/views/procurement/request-list.vue"),
         meta: {
           hide: false,
+          activeLink: "Procurement",
           //breadcrumbs > >
           groupParent: "Procurement",
         },
       },
+
+
+
+
+
+      {
+        path: "submit-pr",
+        name: "Submit-Purchase-Request",
+        component: () => import("@/views/procurement/submit-pr.vue"),
+        meta: {
+          hide: false,
+          activeLink: "Procurement",
+          //breadcrumbs > >
+          groupParent: "Procurement",
+        },
+      },
+      {
+        path: "request-items-for-pr/:id?",
+        name: "PR-Request-Items",
+        component: () => import("@/views/procurement/request-items-for-pr.vue"),
+        meta: {
+          hide: false,
+          activeLink: "Procurement",
+          //breadcrumbs > >
+          groupParent: "Procurement",
+        },
+      },
+      {
+        path: "update-pr/:id?",
+        name: "Update-Purchase-Request",
+        component: () => import("@/views/procurement/update-pr.vue"),
+        meta: {
+          hide: false,
+          activeLink: "Procurement",
+          //breadcrumbs > >
+          groupParent: "Procurement",
+        },
+      },
+      {
+        path: "pr-add-item/:id?",
+        name: "PR-Add-Items",
+        component: () => import("@/views/procurement/pr-add-item.vue"),
+        meta: {
+          hide: false,
+          activeLink: "Procurement",
+          //breadcrumbs > >
+          groupParent: "Procurement",
+        },
+      },
+      {
+        path: "pr-edit-item/:id?",
+        name: "PR-Edit-Item",
+        component: () => import("@/views/procurement/pr-edit-item.vue"),
+        meta: {
+          hide: false,
+          activeLink: "Procurement",
+          //breadcrumbs > >
+          groupParent: "Procurement",
+        },
+      },
+
+
+
+      
       {
         path: "ppmp",
         name: "PPMP-FORM",
         component: () => import("@/views/procurement/ppmp.vue"),
         meta: {
           hide: false,
+          activeLink: "Procurement",
           //breadcrumbs > >
           groupParent: "Procurement",
         },
       },
+      {
+        path: "ppmprecords",
+        name: "PPMP-Records",
+        component: () => import("@/views/procurement/ppmprecords.vue"),
+        meta: {
+          hide: false,
+          activeLink: "Procurement",
+          //breadcrumbs > >
+          groupParent: "Procurement",
+        },
+      },
+      {
+        path: "manageppmprecords",
+        name: "PPMP-Manage",
+        component: () => import("@/views/procurement/manageppmprecords.vue"),
+        meta: {
+          hide: false,
+          activeLink: "Procurement",
+          //breadcrumbs > >
+          groupParent: "Procurement",
+        },
+      },
+      {
+        path: "list-new-item/:id?",
+        name: "PPMP-Items",
+        component: () => import("@/views/procurement/list-new-item.vue"),
+        meta: {
+          hide: false,
+          activeLink: "Procurement",
+          //breadcrumbs > >
+          groupParent: "Procurement",
+        },
+      },
+      {
+        path: "edit-item/:id?",
+        name: "PPMP-Items-Edit",
+        component: () => import("@/views/procurement/edit-item.vue"),
+        meta: {
+          hide: false,
+          activeLink: "Procurement",
+          //breadcrumbs > >
+          groupParent: "Procurement",
+        },
+      },
+      {
+        path: "ppmp-items",
+        name: "PPMP-Item-Listing",
+        component: () => import("@/views/procurement/manage-items.vue"),
+        meta: {
+          hide: false,
+          activeLink: "Procurement",
+          //breadcrumbs > >
+          groupParent: "Procurement",
+        },
+      },
+      {
+        path: "view-items/:id?",
+        name: "Item-Listing",
+        component: () => import("@/views/procurement/view-items.vue"),
+        meta: {
+          hide: false,
+          activeLink: "Procurement",
+          //breadcrumbs > >
+          groupParent: "Procurement",
+        },
+      },
+      {
+        path: "ppmprecords",
+        name: "PPMP-Records",
+        component: () => import("@/views/procurement/ppmprecords.vue"),
+        meta: {
+          hide: false,
+          //breadcrumbs > >
+          activeLink: "Procurement",
+          groupParent: "Procurement",
+        },
+      },
+      {
+        path: "ppmp-edit/:id?",
+        name: "PPMP-Edit",
+        component: () => import("@/views/procurement/ppmp-edit.vue"),
+        meta: {
+          hide: false,
+          activeLink: "Procurement",
+          //breadcrumbs > >
+          groupParent: "Procurement",
+        },
+      },
+      
       {
         path: "system-users",
         name: "System Users",
@@ -153,14 +309,16 @@ const routes = [
           groupParent: "Accounts",
         },
       },
-      { path: "system-users-edit/:id?",
-      name: "Edit User Details", 
-      component: () => import("@/views/accounts/system-users-edit.vue"), 
-      meta: { 
-        activeLink: "System Users ",
-          hide: false,
-        groupParent: "Accounts", }, 
-    },
+      {
+        path: "system-users-edit/:id?",
+        name: "Edit User Details", 
+        component: () => import("@/views/accounts/system-users-edit.vue"), 
+        meta: { 
+          activeLink: "System Users",
+          // hide: false,
+          groupParent: "Accounts", 
+        }, 
+      },
       {
         path: "system-roles",
         name: "Roles & Permissions",
@@ -186,7 +344,7 @@ const routes = [
       { path: "manage-permissions/:id?",
         name: "Manage Permissions", 
         component: () => import("@/views/accounts/manage-permissions.vue"), 
-        meta: { groupParent: "Accounts", }, 
+        meta: { groupParent: "Accounts", activeLink: "Roles & Permissions",}, 
       },
       { path: "system-roles-edit/:id?",
         name: "Edit User Role", 
@@ -712,6 +870,9 @@ const routes = [
         path: "profile",
         name: "profile",
         component: () => import("@/views/profile.vue"),
+        meta: {
+          activeLink: "Profile"
+        }
       },
       {
         path: "profile-setting",

@@ -75,6 +75,8 @@ export default {
           link: () => {
             this.$router.push("/");
             localStorage.removeItem("activeUser");
+            localStorage.removeItem("jwt");
+            localStorage.removeItem("permissions");
           },
         },
       ],

@@ -78,7 +78,19 @@ export default {
     return {
       checkbox: false,
       apiEndPoint,
+      user: [],
     };
+  },
+  methods: {
+    checkLoggedIn: function(){
+      try{
+        this.user = JSON.parse(localStorage.activeUser);
+        this.$router.push("/app/home");
+      }
+      catch(err){
+        this.$router.push("/");
+      }
+    }
   },
   setup() {
     // Define a validation schema
@@ -123,7 +135,7 @@ export default {
               axios.get(apiEndPoint + "/api/user_permissions/"+activeUser.id)
                 .then((perm) => {
                   // console.log(response.data[0]);
-                  localStorage.setItem("permissions", JSON.stringify(perm));
+                  localStorage.setItem("permissions", JSON.stringify(perm.data));
                   router.push("/app/home");
                   toast.success(" Logged in successfully!", {
                     timeout: 2000,
@@ -152,6 +164,10 @@ export default {
       onSubmit,
     };
   },
+
+  mounted() {
+    this.checkLoggedIn();
+  }
 };
 </script>
 <style lang="scss"></style>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Card title="Create New Project Procurement Management Plan">
+   <Card title="Create New Project Procurement Management Plan">
       <form @submit.prevent="onSubmit">
         <div class="grid lg:grid-cols-1 md:grid-cols-1 grid-cols-1 gap-5">
           <div class="grid lg:grid-cols-4 grid-cols-1 gap-5">
@@ -59,6 +59,7 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 
 import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 
 import axios from 'axios';
@@ -95,6 +96,33 @@ export default {
     };
   },
 
+  methods: {
+    useToken: function () {
+      const token = JSON.parse(localStorage.jwt);
+      if(token){
+        axios.defaults.headers = {
+          accept: "application/json",
+          Authorization: `Bearer ${token}`
+        }  
+      }
+    },
+
+    getPpmp: function() {
+      this.useToken();
+
+      axios.get(apiEndPoint + "/api/ppmps/" + this.$route.query.id)
+        .then((response) => {
+          this.calendar_year = response.data["calendar_year"];
+          this.project_title = response.data["project_title"];
+          this.pmo_end_user_dept = response.data["pmo_end_user_dept"];
+          this.source_of_fund = response.data["source_of_fund"];
+        })
+        .catch((error) => {
+
+        });
+      }
+  },
+
   setup() {
     const schema = yup.object({
       calendar_year: yup.string().required("Calendar Year is required"),
@@ -105,6 +133,7 @@ export default {
 
     const toast = useToast();
     const router = useRouter();
+    const route = useRoute();
 
     const formValues = {
       calendar_year: "",
@@ -132,7 +161,7 @@ export default {
         }  
       }
 
-      axios.post(apiEndPoint + "/api/add_ppmp", values)
+      axios.put(apiEndPoint + "/api/update_ppmp/" + route.query.id, values)
         .then((response) => {
           // router.push("/app/ppmprecords");
           router.back();
@@ -159,6 +188,10 @@ export default {
       onSubmit
     }
   },
+
+  mounted () {
+    this.getPpmp();
+  }
 };
 </script>
 <style lang=""></style>

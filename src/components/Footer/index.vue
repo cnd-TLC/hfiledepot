@@ -10,11 +10,11 @@
         <div class="ltr:md:text-right rtl:md:text-end text-center text-sm">
           Hand-crafted & Made by
           <a
-            href="https://codeshaper.net"
+            href="https://thelewiscollege.edu.ph"
             target="_blank"
             class="text-primary-500 font-semibold"
           >
-            Codeshaper
+            THE LEWIS COLLEGE
           </a>
         </div>
       </div>

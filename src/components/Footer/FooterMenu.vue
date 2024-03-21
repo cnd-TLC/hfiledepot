@@ -2,7 +2,7 @@
   <div
     class="bg-white bg-no-repeat custom-dropshadow footer-bg dark:bg-slate-700 flex justify-around items-center backdrop-filter backdrop-blur-[40px] fixed left-0 w-full z-[9999] bottom-0 py-[12px] px-4"
   >
-    <router-link :to="{ name: 'chat' }" v-slot="{ isActive }">
+    <!-- <router-link :to="{ name: 'chat' }" v-slot="{ isActive }">
       <span
         class="relative cursor-pointer rounded-full text-[20px] flex flex-col items-center justify-center"
         :class="[
@@ -21,7 +21,7 @@
         ]"
         >Messages</span
       >
-    </router-link>
+    </router-link> -->
     <router-link
       v-slot="{ isActive }"
       :to="{ name: 'profile' }"
@@ -42,7 +42,7 @@
         />
       </div>
     </router-link>
-    <router-link :to="{ name: 'notifications' }" v-slot="{ isActive }">
+    <!-- <router-link :to="{ name: 'notifications' }" v-slot="{ isActive }">
       <span
         class="relative cursor-pointer rounded-full text-[20px] flex flex-col items-center justify-center"
         :class="[
@@ -61,7 +61,7 @@
         ]"
         >Notifications</span
       >
-    </router-link>
+    </router-link> -->
   </div>
 </template>
 <script>

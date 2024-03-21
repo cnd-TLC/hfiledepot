@@ -231,7 +231,8 @@ export default {
 
       axios.put(apiEndPoint + '/api/update_user/' + route.query.id, values)
         .then((response) => {
-          router.push("/app/system-users");
+          router.back();
+          // router.push("/app/system-users");
           toast.success(" Data saved.", {
             timeout: 2000,
           });

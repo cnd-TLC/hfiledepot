@@ -209,7 +209,8 @@ export default {
 
       axios.post(apiEndPoint + '/api/add_user', values)
         .then((response) => {
-          router.push("/app/system-users");
+          // router.push("/app/system-users");
+          router.back();
           toast.success(" Data saved.", {
             timeout: 2000,
           });

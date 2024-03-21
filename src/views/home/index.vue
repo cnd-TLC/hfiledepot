@@ -1,540 +1,234 @@
 <template>
   <div>
-    <Breadcrumb />
-    <div class="grid grid-cols-12 gap-5 mb-5">
-      <div class="2xl:col-span-3 lg:col-span-4 col-span-12">
-        <div
-          class="bg-no-repeat bg-cover bg-center p-4 rounded-[6px] relative"
-          :style="{
-            backgroundImage:
-              'url('+ widget1 +')',
-          }"
-        >
-          <div class="max-w-[169px]">
-            <div class="text-xl font-medium text-slate-900 mb-2">
-              Upgrade your HFILE Depot
-            </div>
-            <p class="text-sm text-slate-800">Pro plan for better results</p>
-          </div>
-          <div
-            class="absolute top-1/2 -translate-y-1/2 ltr:right-6 rtl:left-6 mt-2 h-12 w-12 bg-white text-slate-900 rounded-full text-xs font-medium flex flex-col items-center justify-center"
-          >
-            Now
-          </div>
-        </div>
-      </div>
-      <div class="2xl:col-span-9 lg:col-span-8 col-span-12">
-        <Card bodyClass="p-4">
-          <div class="grid md:grid-cols-3 col-span-1 gap-4">
-            <div
-              class="py-[18px] px-4 rounded-[6px]"
-              v-for="(item, i) in statistics"
-              :class="item.bg"
-              :key="i"
-            >
-              <div class="flex items-center space-x-6 rtl:space-x-reverse">
-                <div class="flex-none">
-                  <apexchart
-                    type="area"
-                    height="48"
-                    width="48"
-                    :options="item.name.chartOptions"
-                    :series="item.name.series"
-                  />
-                </div>
-                <div class="flex-1">
-                  <div
-                    class="text-slate-800 dark:text-slate-300 text-sm mb-1 font-medium"
-                  >
-                    {{ item.title }}
-                  </div>
-                  <div
-                    class="text-slate-900 dark:text-white text-lg font-medium"
-                  >
-                    {{ item.count }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Card>
-      </div>
-    </div>
-    <div class="grid grid-cols-12 gap-5">
-      <div class="lg:col-span-8 col-span-12">
-        <Card>
-          <div class="legend-ring">
-            <apexchart
-              type="bar"
-              height="400"
-              :options="columnCharthomeComputed.chartOptions"
-              :series="columnCharthomeComputed.series"
-            />
-          </div>
-        </Card>
-      </div>
-      <div class="lg:col-span-4 col-span-12">
-        <Card title="overview">
-          <template #header>
-            <DropEvent />
-          </template>
-          <apexchart
-            type="radialBar"
-            :height="window.width > 768 ? 350 : 250"
-            :options="
-              this.$store.themeSettingsStore.isDark
-                ? MultipleRadialbarsDark.chartOptions
-                : MultipleRadialbars.chartOptions
-            "
-            :series="MultipleRadialbars.series"
-          />
-        </Card>
-      </div>
-      <div class="lg:col-span-8 col-span-12">
-        <Card title="All company" noborder>
-          <template #header>
-            <DropEvent />
-          </template>
-          <CompanyTable class="-mx-6 -mb-6" />
-        </Card>
-      </div>
-      <div class="lg:col-span-4 col-span-12">
-        <Card title="Recent activity">
-          <template #header>
-            <DropEvent />
-          </template>
-          <ul class="list-item space-y-3 h-full overflow-x-auto">
-            <li
-              class="flex items-center space-x-3 rtl:space-x-reverse border-b border-slate-100 dark:border-slate-700 last:border-b-0 pb-3 last:pb-0"
-              v-for="(item, i) in activity"
-              :key="i"
-            >
-              <div>
-                <div class="w-8 h-8 rounded-[100%]">
+    <!-- <Breadcrumb /> -->
+    <div class="card-auto space-y-5" v-if="this.visible">
+      <div class="grid grid-cols-12 gap-5">
+        <div class="lg:col-span-8 col-span-12 space-y-5">
+          <Card>
+            <div class="grid xl:grid-cols-4 lg:grid-cols-2 col-span-1 gap-3">
+              <div
+                v-for="(item, i) in statistics"
+                :key="i"
+                :class="item.bg"
+                class="rounded-md p-4 bg-opacity-[0.15] dark:bg-opacity-25 relative z-[1]"
+              >
+                <div class="overlay absolute left-0 top-0 w-full h-full z-[-1]">
                   <img
                     :src="item.img"
                     alt=""
-                    class="w-full h-full rounded-[100%] object-cover"
+                    draggable="false"
+                    class="w-full h-full object-contain"
                   />
                 </div>
-              </div>
-              <div
-                class="text-start overflow-hidden text-ellipsis whitespace-nowrap max-w-[63%]"
-              >
-                <div
-                  class="text-sm text-slate-600 dark:text-slate-300 overflow-hidden text-ellipsis whitespace-nowrap"
+                <span
+                  class="block mb-6 text-sm text-slate-900 dark:text-white font-medium"
+                  >{{ item.title }}</span
                 >
-                  Finance KPI Mobile app launch preparation meeting.
+                <span
+                  class="block mb- text-2xl text-slate-900 dark:text-white font-medium mb-6"
+                  >{{ item.count }}</span
+                >
+                <div class="flex space-x-2 rtl:space-x-reverse">
+                  <div class="flex-none text-xl" :class="item.text">
+                    <Icon :icon="item.icon" />
+                  </div>
+                  <div class="flex-1 text-sm">
+                    <span class="block mb-[2px]" :class="item.percentClass">{{
+                      item.percent
+                    }}</span>
+                    <span class="block mb-1 text-slate-600 dark:text-slate-300"
+                      >From last week</span
+                    >
+                  </div>
                 </div>
               </div>
-              <div class="flex-1 ltr:text-right rtl:text-left">
-                <div
-                  class="text-sm font-light text-slate-400 dark:text-slate-400"
-                >
-                  1 hours
+            </div>
+          </Card>
+          <Card>
+            <header class="md:flex md:space-y-0 space-y-4">
+              <h6 class="flex-1 text-slate-900 dark:text-white capitalize">
+                Deal distribution by stage
+              </h6>
+              <div class="flex-none">
+                <FromGroup>
+                  <flat-pickr
+                    class="form-control bg-white"
+                    placeholder="Select date range"
+                    v-model="rangeDate"
+                    :config="{ mode: 'range' }"
+                  />
+                </FromGroup>
+              </div>
+            </header>
+
+            <div class="legend-ring">
+              <apexchart
+                type="bar"
+                height="410"
+                :options="
+                  this.$store.themeSettingsStore.isDark
+                    ? stackedDark.chartOptions
+                    : stacked.chartOptions
+                "
+                :series="stacked.series"
+              />
+            </div>
+          </Card>
+        </div>
+        <div class="lg:col-span-4 col-span-12 space-y-5">
+          <Card title="Campaigns">
+            <template #header>
+              <DropEvent />
+            </template>
+            <ul class="divide-y divide-slate-100 dark:divide-slate-700">
+              <li
+                v-for="(item, i) in Campaigns"
+                :key="i"
+                class="first:text-xs text-sm first:text-slate-600 text-slate-600 dark:text-slate-300 py-2 first:uppercase"
+              >
+                <div class="flex justify-between">
+                  <span>{{ item.name }}</span>
+                  <span>{{ item.value }}</span>
                 </div>
-              </div>
-            </li>
-          </ul>
-        </Card>
-      </div>
-      <div class="lg:col-span-8 col-span-12">
-        <Card title="Most sales">
-          <template #header>
-            <div
-              class="border border-slate-200 dark:border-slate-700 dark:bg-slate-900 rounded p-1 flex items-center"
-            >
-              <span
-                class="flex-1 text-sm font-normal px-3 py-1 transition-all duration-150 rounded cursor-pointer"
-                :class="
-                  fillterMap === 'global'
-                    ? 'bg-slate-900 text-white dark:bg-slate-700 dark:text-slate-300'
-                    : 'dark:text-slate-300'
+              </li>
+            </ul>
+          </Card>
+          <Card title="trends calcultation">
+            <template #header>
+              <SelectMonth />
+            </template>
+            <div class="legend-ring3">
+              <apexchart
+                type="pie"
+                height="335"
+                :options="
+                  this.$store.themeSettingsStore.isDark
+                    ? pieChartDark.chartOptions
+                    : pieChart.chartOptions
                 "
-                @click="fillterMap = 'global'"
-                >Global</span
-              >
-              <span
-                class="flex-1 text-sm font-normal px-3 py-1 rounded transition-all duration-150 cursor-pointer"
-                :class="
-                  fillterMap === 'usa'
-                    ? 'bg-slate-900 text-white dark:bg-slate-700 dark:text-slate-300'
-                    : 'dark:text-slate-300'
-                "
-                @click="fillterMap = 'usa'"
-                >USA</span
-              >
+                :series="pieChart.series"
+              />
             </div>
-          </template>
-          <div class="md:flex items-center">
-            <div class="flex-none">
-              <h4
-                class="text-slate-600 dark:text-slate-200 text-sm font-normal mb-[6px]"
-              >
-                Total earnings
-              </h4>
-              <div
-                class="tetx-lg font-medium mb-[6px] dark:text-white text-slate-900"
-                v-if="fillterMap === 'usa'"
-              >
-                $12,65,64787.00
-              </div>
-              <div
-                class="tetx-lg font-medium mb-[6px] dark:text-white text-slate-900"
-                v-if="fillterMap === 'global'"
-              >
-                $12,65.00
-              </div>
-              <div class="text-xs font-light dark:text-slate-200">
-                <span class="text-primary-500">+08%</span> From last month
-              </div>
-              <ul
-                class="bg-slate-50 dark:bg-slate-900 rounded p-4 min-w-[184px] space-y-5 mt-4"
-              >
-                <li
-                  v-for="(item, i) in mostSales"
-                  :key="i"
-                  class="flex justify-between text-xs text-slate-600 dark:text-slate-300"
-                >
-                  <span class="flex space-x-2 rtl:space-x-reverse items-center">
-                    <span
-                      :class="item.cls"
-                      class="inline-flex h-[6px] w-[6px] bg-primary-500 ring-opacity-25 rounded-full ring-4"
-                    ></span>
-                    <span>{{ item.title }}</span></span
-                  >
-                  <span>{{ item.amount }}</span>
-                </li>
-              </ul>
-            </div>
-            <div class="flex-1">
-              <Map />
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
       </div>
-      <div class="lg:col-span-4 col-span-12">
-        <Card title="overview">
-          <template #header>
-            <SelectMonth />
-          </template>
-          <apexchart
-            type="radialBar"
-            height="300"
-            :options="
-              this.$store.themeSettingsStore.isDark
-                ? gearradilDark.chartOptions
-                : gearradil.chartOptions
-            "
-            :series="gearradil.series"
-          />
-          <div
-            class="bg-slate-50 dark:bg-slate-900 rounded p-4 mt-8 flex justify-between flex-wrap"
-          >
-            <div class="space-y-1">
-              <h4
-                class="text-slate-600 dark:text-slate-200 text-xs font-normal"
-              >
-                Invested amount
-              </h4>
-              <div class="tetx-sm font-medium text-slate-900 dark:text-white">
-                $8264.35
-              </div>
-              <div
-                class="text-slate-500 dark:text-slate-300 text-xs font-normal"
-              >
-                +0.001.23 (0.2%)
-              </div>
-            </div>
-            <!-- !! end single -->
-            <div class="space-y-1">
-              <h4
-                class="text-slate-600 dark:text-slate-200 text-xs font-normal"
-              >
-                Invested amount
-              </h4>
-              <div class="tetx-sm font-medium text-slate-900 dark:text-white">
-                $8264.35
-              </div>
-            </div>
-            <!-- !! end single -->
-            <div class="space-y-1">
-              <h4
-                class="text-slate-600 dark:text-slate-200 text-xs font-normal"
-              >
-                Invested amount
-              </h4>
-              <div class="tetx-sm font-medium text-slate-900 dark:text-white">
-                $8264.35
-              </div>
-            </div>
-            <!-- !! end single -->
-          </div>
-        </Card>
-      </div>
+      <Card title="Latest Transaction" noborder>
+        <template #header>
+          <DropEvent />
+        </template>
+        <div class="-mx-6">
+          <CrmTable />
+        </div>
+      </Card>
     </div>
   </div>
 </template>
 <script>
+import Breadcrumb from "./Analytics-Component/Breadcrumbs";
 import Card from "@/components/Card";
+import FromGroup from "@/components/FromGroup";
+import Icon from "@/components/Icon";
+import CrmTable from "./Analytics-Component/CrmTable";
 import {
-  gearradil,
-  gearradilDark,
-  MultipleRadialbars,
-  MultipleRadialbarsDark,
-} from "../../constant/appex-chart";
-import CompanyTable from "./Analytics-Component/CompanyTable";
-import {
-  columnCharthome,
-  columnCharthomeDark,
-  shapeLine1,
-  shapeLine2,
-  shapeLine3,
-  mostSales,
+  pieChart,
+  pieChartDark,
+  stacked,
+  stackedDark,
 } from "./Analytics-Component/data";
 import DropEvent from "./Analytics-Component/DropEvent";
-import Map from "./Analytics-Component/Map";
 import SelectMonth from "./Analytics-Component/SelectMonth";
-import Breadcrumb from "./Analytics-Component/Breadcrumbs";
-import window from "@/mixins/window";
 
-// image import
-import widget1 from "@/assets/images/all-img/widget-bg-1.png"
-import activity1 from "@/assets/images/users/user-1.jpg"
-import activity2 from "@/assets/images/users/user-2.jpg"
-import activity3 from "@/assets/images/users/user-3.jpg"
-import activity4 from "@/assets/images/users/user-4.jpg"
-import activity5 from "@/assets/images/users/user-5.jpg"
-import activity6 from "@/assets/images/users/user-6.jpg"
+// Import Images
+import shade1 from "@/assets/images/all-img/shade-1.png"
+import shade2 from "@/assets/images/all-img/shade-2.png"
+import shade3 from "@/assets/images/all-img/shade-3.png"
+import shade4 from "@/assets/images/all-img/shade-4.png"
 
 export default {
-  mixins: [window],
   components: {
     Card,
-    CompanyTable,
-    Map,
+    Icon,
+    CrmTable,
     DropEvent,
+    FromGroup,
     SelectMonth,
     Breadcrumb,
   },
   data() {
     return {
-      widget1,
-      columnCharthome,
-      columnCharthomeDark,
-      MultipleRadialbars,
-      MultipleRadialbarsDark,
-      gearradil,
-      gearradilDark,
-      mostSales,
-      fillterMap: "usa",
+      visible: false,
+      user: [],
+      stacked,
+      stackedDark,
+      rangeDate: null,
+      pieChart,
+      pieChartDark,
       statistics: [
         {
-          name: shapeLine1,
-          title: "Totel revenue",
-          count: "3,564",
-          bg: "bg-[#E5F9FF] dark:bg-slate-900	",
+          title: "Sales",
+          count: "354",
+          bg: "bg-warning-500",
+          text: "text-primary-500",
+          percent: "25.67% ",
+          icon: "heroicons:arrow-trending-up",
+          img: shade1,
+          percentClass: "text-primary-500",
         },
         {
-          name: shapeLine2,
-          title: "Products sold",
-          count: "564",
-          bg: "bg-[#FFEDE5] dark:bg-slate-900	",
+          title: "Revenue ",
+          count: "$86,954",
+
+          bg: "bg-info-500",
+          text: "text-primary-500",
+          percent: "8.67%",
+          icon: "heroicons:arrow-trending-up",
+          img: shade2,
+          percentClass: "text-primary-500",
         },
         {
-          name: shapeLine3,
-          title: "Growth",
-          count: "+5.0%",
-          bg: "bg-[#EAE5FF] dark:bg-slate-900	",
+          title: "Conversion",
+          count: "15%",
+          bg: "bg-primary-500",
+          text: "text-danger-500",
+          percent: "1.67%  ",
+          icon: "heroicons:arrow-trending-down",
+          img: shade3,
+          percentClass: "text-danger-500",
+        },
+        {
+          title: "Leads",
+          count: "654",
+          bg: "bg-success-500",
+          text: "text-primary-500",
+          percent: "11.67%  ",
+          icon: "heroicons:arrow-trending-up",
+          img: shade4,
+          percentClass: "text-primary-500",
         },
       ],
-      activity: [
+      Campaigns: [
         {
-          id: 1,
-          img: activity1,
+          name: "Channel",
+          value: "roi",
         },
         {
-          id: 2,
-          img: activity2,
+          name: "Email",
+          value: "40%",
         },
         {
-          id: 3,
-          img: activity3,
+          name: "Website",
+          value: "28%",
         },
         {
-          id: 4,
-          img: activity4,
+          name: "Facebook",
+          value: "34%",
         },
         {
-          id: 5,
-          img: activity5,
-        },
-        {
-          id: 6,
-          img: activity6,
-        },
-        {
-          id: 7,
-          img: activity1,
-        },
-        {
-          id: 8,
-          img: activity4,
-        },
-        {
-          id: 9,
-          img: activity3,
+          name: "Offline",
+          value: "17%",
         },
       ],
     };
-  },
-
-  computed: {
-    columnCharthomeComputed() {
-      return {
-        series: [
-          {
-            name: "Net Profit",
-            data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
-          },
-          {
-            name: "Revenue",
-            data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
-          },
-          {
-            name: "Free Cash Flow",
-            data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
-          },
-        ],
-        chartOptions: {
-          chart: {
-            toolbar: {
-              show: false,
-            },
-          },
-          plotOptions: {
-            bar: {
-              horizontal: false,
-              endingShape: "rounded",
-              columnWidth: "45%",
-            },
-          },
-          legend: {
-            show: true,
-            position: "top",
-            horizontalAlign: "right",
-            fontSize: "12px",
-            fontFamily: "Inter",
-            offsetY: -30,
-            markers: {
-              width: 8,
-              height: 8,
-              offsetY: -1,
-              offsetX: -5,
-              radius: 12,
-            },
-            labels: {
-              colors: this.$store.themeSettingsStore.isDark ? "#CBD5E1" : "#475569",
-            },
-            itemMargin: {
-              horizontal: 18,
-              vertical: 0,
-            },
-          },
-          title: {
-            text: "Revenue Report",
-            align: "left",
-
-            offsetX: this.$store.themeSettingsStore.direction ? "0%" : 0,
-            offsetY: 13,
-            floating: false,
-            style: {
-              fontSize: "20px",
-              fontWeight: "500",
-              fontFamily: "Inter",
-              color: this.$store.themeSettingsStore.isDark ? "#fff" : "#0f172a",
-            },
-          },
-          dataLabels: {
-            enabled: false,
-          },
-          stroke: {
-            show: true,
-            width: 2,
-            colors: ["transparent"],
-          },
-          yaxis: {
-            opposite: this.$store.themeSettingsStore.direction ? true : false,
-            labels: {
-              style: {
-                colors: this.$store.themeSettingsStore.isDark ? "#CBD5E1" : "#475569",
-                fontFamily: "Inter",
-              },
-            },
-          },
-          xaxis: {
-            categories: [
-              "Feb",
-              "Mar",
-              "Apr",
-              "May",
-              "Jun",
-              "Jul",
-              "Aug",
-              "Sep",
-              "Oct",
-            ],
-            labels: {
-              style: {
-                colors: this.$store.themeSettingsStore.isDark ? "#CBD5E1" : "#475569",
-                fontFamily: "Inter",
-              },
-            },
-            axisBorder: {
-              show: false,
-            },
-            axisTicks: {
-              show: false,
-            },
-          },
-
-          fill: {
-            opacity: 1,
-          },
-          tooltip: {
-            y: {
-              formatter: function (val) {
-                return "$ " + val + " thousands";
-              },
-            },
-          },
-          colors: ["#4669FA", "#0CE7FA", "#FA916B"],
-          grid: {
-            show: true,
-            borderColor: this.$store.themeSettingsStore.isDark ? "#334155" : "#E2E8F0",
-            strokeDashArray: 10,
-            position: "back",
-          },
-          responsive: [
-            {
-              breakpoint: 600,
-              options: {
-                legend: {
-                  position: "bottom",
-                  offsetY: 8,
-                  horizontalAlign: "center",
-                },
-                plotOptions: {
-                  bar: {
-                    columnWidth: "80%",
-                  },
-                },
-              },
-            },
-          ],
-        },
-      };
-    },
   },
 };
 </script>

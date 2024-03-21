@@ -3,8 +3,8 @@ import user2Img from "@/assets/images/all-img/user2.png";
 import user3Img from "@/assets/images/all-img/user3.png";
 import user4Img from "@/assets/images/all-img/user4.png";
 
-export const apiEndPoint = "https://mab-solutions.online";
-// export const apiEndPoint = "http://127.0.0.1:8000";
+// export const apiEndPoint = "https://mab-solutions.online";
+export const apiEndPoint = "http://127.0.0.1:8000";
 
 export const menuItems = [
   {
@@ -16,7 +16,7 @@ export const menuItems = [
     title: "Dashboard",
     icon: "heroicons-outline:home",
     isOpen: true,
-    link: 'crm',
+    link: 'home',
     isActive: false, // Add isActive property for System Users
 
   },
@@ -32,41 +32,44 @@ export const menuItems = [
     icon: "heroicons-outline:clipboard-document-check",
     link: "#",
     child: [
-      {
-        childtitle: "Request",
-        childlink: "purchase-request",
-      },
+      // {
+      //   childtitle: "Request",
+      //   childlink: "purchase-request",
+      // },
       {
         childtitle: "List of Requests",
         childlink: "request-list",
       },
       {
-        childtitle: "PPMP",
-        childlink: "ppmp",
+        childtitle: "Create PPMP",
+        childlink: "ppmprecords",
       },
-     
+      {
+        childtitle: "Manage PPMP Records",
+        childlink: "manageppmprecords",
+      },
     ],
   },
-  {
-    title: "Inventory",
-    icon: "heroicons-outline:archive-box",
-    link: "#",
-    child: [
-      {
-        childtitle: "Procured Items",
-        childlink: "procured-items",
-      },
-      {
-        childtitle: "Manage Items",
-        childlink: "manage-items",
-      },
-      {
-        childtitle: "For Inspection",
-        childlink: "for-inspection-items",
-      },
+  // {
+  //   title: "Inventory",
+  //   icon: "heroicons-outline:archive-box",
+  //   link: "#",
+  //   child: [
+  //     {
+  //       childtitle: "Procured Items",
+  //       childlink: "procured-items",
+  //     },
+  //     {
+  //       childtitle: "Manage Items",
+  //       childlink: "manage-items",
+  //     },
+  //     {
+  //       childtitle: "For Inspection",
+  //       childlink: "for-inspection-items",
+  //     },
      
-    ],
-  },
+  //   ],
+  // },
   
   {
     isHeadr: true,

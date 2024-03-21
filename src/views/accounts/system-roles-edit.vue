@@ -134,7 +134,8 @@ export default {
 
       axios.put(apiEndPoint + '/api/update_role/' + route.query.id, values)
         .then((response) => {
-          router.push("/app/system-roles");
+          // router.push("/app/system-roles");
+          router.back();
           toast.success("Data saved.", {
             timeout: 2000,
           });

@@ -484,7 +484,8 @@ export default {
 
       axios.post(apiEndPoint + "/api/add_role", values)
         .then((response) => {
-          router.push("/app/system-roles");
+          // router.push("/app/system-roles");
+          router.back();
           toast.success("Data saved.", {
             timeout: 2000,
           });

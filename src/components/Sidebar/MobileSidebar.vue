@@ -32,6 +32,7 @@
       <div class="mt-6">
         <button
           class="btn bg-slate-300 hover:bg-opacity-80 text-slate-900 btn-sm w-full block"
+          @click="logout()"
         >
           Log Out
         </button>
@@ -64,6 +65,12 @@ export default defineComponent({
     };
   },
   methods: {
+    logout: function() {
+      localStorage.removeItem("activeUser");
+      localStorage.removeItem("jwt");
+      localStorage.removeItem("permissions");
+      this.$router.push("/");
+    },
     toggleMsidebar() {
       themeSettingsStore.toggleMsidebar()
     },

@@ -34,7 +34,7 @@
           <handle-mobile-menu
             v-if="window.width < 1280 && window.width > 768"
           />
-          <SearchModal />
+          <!-- <SearchModal /> -->
         </div>
         <div
           v-if="this.$store.themeSettingsStore.menuLayout === 'horizontal'"
@@ -54,7 +54,7 @@
         >
            
           <SwitchDark /> 
-          <Notification v-if="window.width > 768" />
+          <!-- <Notification v-if="window.width > 768" /> -->
           <Profile v-if="window.width > 768" />
           <handle-mobile-menu v-if="window.width < 768" />
         </div>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <Breadcrumb />
-    <div class="card-auto space-y-5">
+    <div class="card-auto space-y-5" v-if="this.visible == true">
       <div class="grid grid-cols-12 gap-5">
         <div class="lg:col-span-8 col-span-12 space-y-5">
           <Card>
@@ -156,6 +156,7 @@ export default {
   },
   data() {
     return {
+      visible: false,
       stacked,
       stackedDark,
       rangeDate: null,
