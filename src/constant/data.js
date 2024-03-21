@@ -3,8 +3,8 @@ import user2Img from "@/assets/images/all-img/user2.png";
 import user3Img from "@/assets/images/all-img/user3.png";
 import user4Img from "@/assets/images/all-img/user4.png";
 
-// export const apiEndPoint = "https://mab-solutions.online";
-export const apiEndPoint = "http://127.0.0.1:8000";
+export const apiEndPoint = "https://mab-solutions.online";
+// export const apiEndPoint = "http://127.0.0.1:8000";
 
 export const menuItems = [
   {
