@@ -67,8 +67,28 @@
               Manage Items
             </router-link>
           </span>
+          <span v-if="props.column.field == 'status'" class="block w-full">
+            <span
+              class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-xs text-warning-500 bg-warning-500"
+              v-if="props.row.status == 'pending'"
+            >
+              Pending
+            </span>
+            <span
+              class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-xs text-success-500 bg-success-500"
+              v-if="props.row.status == 'approved'"
+            >
+              Approved
+            </span>
+            <span
+              class="inline-block px-3 min-w-[90px] text-center mx-auto py-1 rounded-[999px] bg-opacity-25 text-xs text-danger-500 bg-danger-500"
+              v-if="props.row.status == 'rejected'"
+            >
+              Rejected
+            </span>
+          </span>
           <span v-if="props.column.field == 'action'">
-            <div class="flex space-x-3 rtl:space-x-reverse">
+            <div class=" space-y-1 rtl:space-x-reverse">
               <!--Tooltip placement="top" arrow theme="dark">
                 <template #button>
                   <div class="action-btn" @click="$refs.modal1.openModal()">
@@ -77,25 +97,16 @@
                 </template>
                 <span> View</span>
               </Tooltip-->
-
-              <Tooltip placement="top" arrow theme="dark">
-                <template #button>
-                  <div class="action-btn">
-                    <RouterLink :to="'ppmp-edit?id=' + props.row.id">
-                      <Icon icon="heroicons:pencil-square" />
-                    </RouterLink>
-                  </div>
-                </template>
-                <span>Edit</span>
-              </Tooltip>
-              <Tooltip placement="top" arrow theme="danger-500">
-                <template #button>
-                  <div class="action-btn" @click="$refs.deleteModal.openModal(); selectDelete(props.row.id)">
-                    <Icon icon="heroicons:trash" />
-                  </div>
-                </template>
-                <span>Delete</span>
-              </Tooltip>
+              <Button
+                text="Update"
+                btnClass=" btn-light font-normal btn-sm block-btn"
+                :link="'ppmp-edit?id=' + props.row.id"
+              />
+              <Button
+                text="Remove"
+                btnClass=" btn-danger font-normal btn-sm block-btn"
+                @click="$refs.deleteModal.openModal(); selectDelete(props.row.id)"
+              />
 
               <Modal
                 title="View User Details"
@@ -273,6 +284,10 @@ export default {
           field: "manageitems",
         },
         {
+          label: "Status",
+          field: "status",
+        },
+        {
           label: "Action",
           field: "action",
         },
@@ -281,12 +296,12 @@ export default {
   },
 
   methods: {
-
     selectDelete: function(id){
       this.selectedPpmp.id = id
     },
 
     getPpmp: function () {
+      const user = JSON.parse(localStorage.activeUser);
       const token = JSON.parse(localStorage.jwt);
       if(token){
         axios.defaults.headers = {
@@ -295,7 +310,7 @@ export default {
         }  
       }
 
-      axios.get(apiEndPoint + "/api/ppmps")
+      axios.get(apiEndPoint + "/api/ppmps/" + user.department_name)
         .then((response) => {
           this.ppmp = response.data;
         })

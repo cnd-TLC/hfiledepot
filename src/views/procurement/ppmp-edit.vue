@@ -3,7 +3,7 @@
    <Card title="Create New Project Procurement Management Plan">
       <form @submit.prevent="onSubmit">
         <div class="grid lg:grid-cols-1 md:grid-cols-1 grid-cols-1 gap-5">
-          <div class="grid lg:grid-cols-4 grid-cols-1 gap-5">
+          <div class="grid lg:grid-cols-3 grid-cols-1 gap-5">
             <Textinput
               label="Calendar Year"
               v-model="calendar_year"
@@ -19,13 +19,13 @@
               :error="project_titleError"
             />
 
-            <Textinput
+            <!-- <Textinput
               label="PMO/End User/Department"
               v-model="pmo_end_user_dept"
               type="text"
               placeholder=""
               :error="pmo_end_user_deptError"
-            />
+            /> -->
             <Textinput
               label="Source of Funds"
               v-model="source_of_fund"
@@ -110,7 +110,7 @@ export default {
     getPpmp: function() {
       this.useToken();
 
-      axios.get(apiEndPoint + "/api/ppmps/" + this.$route.query.id)
+      axios.get(apiEndPoint + "/api/specificPpmps/" + this.$route.query.id)
         .then((response) => {
           this.calendar_year = response.data["calendar_year"];
           this.project_title = response.data["project_title"];
@@ -124,6 +124,9 @@ export default {
   },
 
   setup() {
+
+    const user = JSON.parse(localStorage.activeUser);
+
     const schema = yup.object({
       calendar_year: yup.string().required("Calendar Year is required"),
       project_title: yup.string().required("Project Title is required"),
@@ -138,7 +141,7 @@ export default {
     const formValues = {
       calendar_year: "",
       project_title: "",
-      pmo_end_user_dept: "",
+      pmo_end_user_dept: user.department_name,
       source_of_fund: "",
     };
 

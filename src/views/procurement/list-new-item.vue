@@ -31,7 +31,6 @@
                 placeholder=""
                 name="unit"
                 v-model="unit"
-                :error="unitError"
               />
             </div>
 
@@ -42,7 +41,6 @@
                 placeholder=""
                 name="quantity"
                 v-model="quantity"
-                :error="quantityError"
               />
             </div>
 
@@ -275,8 +273,6 @@ export default {
     const schema = yup.object({
       code: yup.string().required("Code is required"),
       general_desc: yup.string().required("General Description is required"),
-      unit: yup.string().required("Unit is required"),
-      quantity: yup.string().required("Quantity is required"),
       mode_of_procurement: yup.string().required("Mode of Procurement is required"),
       est_budget: yup.string().required("Estimated Budget is required"),
     });
@@ -313,8 +309,8 @@ export default {
 
     const { value: code, errorMessage: codeError } = useField("code");
     const { value: general_desc, errorMessage: general_descError } = useField("general_desc");
-    const { value: unit, errorMessage: unitError } = useField("unit");
-    const { value: quantity, errorMessage: quantityError } = useField("quantity");
+    const { value: unit } = useField("unit");
+    const { value: quantity } = useField("quantity");
     const { value: mode_of_procurement, errorMessage: mode_of_procurementError } = useField("mode_of_procurement");
     const { value: est_budget, errorMessage: est_budgetError } = useField("est_budget");
     const { value: jan, errorMessage: janError } = useField("jan");
@@ -375,8 +371,6 @@ export default {
       dec,
       codeError,
       general_descError,
-      unitError,
-      quantityError,
       mode_of_procurementError,
       est_budgetError,
       janError,

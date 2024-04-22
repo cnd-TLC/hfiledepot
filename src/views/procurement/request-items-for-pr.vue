@@ -2,21 +2,6 @@
   <div>
     <div class="grid lg:grid-cols-122 grid-cols-1 gap-5">
       <Card>
-        <td class="text-slate-700 dark:text-slate-300 text-base font-normal">
-          <div>LGU Sorsogon City</div>
-          <div class="text-md text-slate-500 dark:text-slate-400 mt-1">
-            Purchase Number:
-          </div>
-          <div class="text-md text-slate-500 dark:text-slate-400 mt-1">FPP:</div>
-          <div class="text-md text-slate-500 dark:text-slate-400 mt-1">Fund:</div>
-          <div class="text-md text-slate-500 dark:text-slate-400 mt-1">Department:</div>
-          <div class="text-md text-slate-500 dark:text-slate-400 mt-1">Section:</div>
-          <div class="text-md text-slate-500 dark:text-slate-400 mt-1">
-            Date Requested:
-          </div>
-        </td>
-      </Card>
-      <Card>
         <div class="md:flex justify-between pb-6 md:space-y-0 space-y-3 items-center">
           <InputGroup
             v-model="searchTerm"
@@ -30,14 +15,40 @@
             text="Add Item"
             btnClass=" btn-dark font-normal btn-sm"
             iconClass="text-lg"
-            :link="`/app/pr-add-item?id=`"
+            @click="$refs.modaladd.openModal()"
           />
+          <Modal
+            title="Request Item from PPMP"
+            label="Request Item from PPMP"
+            labelClass="btn-outline-success"
+            ref="modaladd"
+          >
+            <Select label="Item" :options="this.approved_ppmp_items_selection" v-model="this.selected.id" />
+            <!-- <Textinput
+              label="Quantity"
+              name="quantity"
+              type="number"
+              placeholder="Enter Quantity"
+            /> -->
+            <template v-slot:footer>
+              <Button
+                text="Close"
+                btnClass="btn-outline-dark "
+                @click="$refs.modaladd.closeModal()"
+              />
+              <Button
+                text="Add Item to Purchase Request"
+                btnClass="btn-success"
+                @click="$refs.modaladd.closeModal(); this.submitItem()"
+              />
+            </template>
+          </Modal>
         </div>
 
         <vue-good-table
           :columns="columns"
           styleClass=" vgt-table bordered centered"
-          :rows="advancedTable"
+          :rows="pr_items"
           :pagination-options="{
             enabled: true,
             perPage: perpage,
@@ -85,26 +96,16 @@
             <span v-if="props.column.field == 'total_cost'" class="dark:text-slate-300">
               <div class="flex-1 text-start">
                 <h4 class="text-sm font-medium text-slate-600 whitespace-nowrap">
-                  {{ props.row.total_cost }}
+                  {{ (props.row.unit_cost * props.row.qty).toFixed(2) }}
                 </h4>
               </div>
             </span>
 
             <span v-if="props.column.field == 'action'">
               <div class="flex space-x-3 rtl:space-x-reverse">
-                <Tooltip placement="top" arrow theme="dark">
-                  <template #button>
-                    <div class="action-btn">
-                      <RouterLink :to="'pr-edit-item/' + props.row.id">
-                        <Icon icon="heroicons:pencil-square" />
-                      </RouterLink>
-                    </div>
-                  </template>
-                  <span>Edit</span>
-                </Tooltip>
                 <Tooltip placement="top" arrow theme="dark-500">
                   <template #button>
-                    <div class="action-btn" @click="$refs.modal2.openModal()">
+                    <div class="action-btn" @click="$refs.removeItemModal.openModal(); selectDelete(props.row.item_id)">
                       <Icon icon="heroicons:trash" />
                     </div>
                   </template>
@@ -112,168 +113,10 @@
                 </Tooltip>
 
                 <Modal
-                  title="Schedule/Milestone of Activities"
-                  label="Schedule"
-                  labelClass="btn-outline-success"
-                  ref="modal1"
-                  sizeClass="max-w-5xl"
-                >
-                  <div class="grid grid-cols-2 gap-4">
-                    <div>
-                      <p class="mt-2 font-medium text-green-600">1st Quarter</p>
-                      <div class="grid grid-cols-3 gap-4">
-                        <div>
-                          <Textinput
-                            label="January"
-                            type="text"
-                            placeholder=""
-                            name="january"
-                            v-model="january"
-                            :error="emailError"
-                          />
-                        </div>
-                        <div>
-                          <Textinput
-                            label="February"
-                            type="text"
-                            placeholder=""
-                            name="february"
-                            v-model="february"
-                            :error="emailError"
-                          />
-                        </div>
-                        <div>
-                          <Textinput
-                            label="March"
-                            type="text"
-                            placeholder=""
-                            name="march"
-                            v-model="march"
-                            :error="emailError"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <p class="mt-2 font-medium text-green-600">2nd Quarter</p>
-                      <div class="grid grid-cols-3 gap-4">
-                        <div>
-                          <Textinput
-                            label="April"
-                            type="text"
-                            placeholder=""
-                            name="april"
-                            v-model="april"
-                            :error="emailError"
-                          />
-                        </div>
-                        <div>
-                          <Textinput
-                            label="May"
-                            type="text"
-                            placeholder=""
-                            name="may"
-                            v-model="may"
-                            :error="emailError"
-                          />
-                        </div>
-                        <div>
-                          <Textinput
-                            label="June"
-                            type="text"
-                            placeholder=""
-                            name="june"
-                            v-model="june"
-                            :error="emailError"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <p class="mt-2 font-medium text-green-600">3rd Quarter</p>
-                      <div class="grid grid-cols-3 gap-4">
-                        <div>
-                          <Textinput
-                            label="July"
-                            type="text"
-                            placeholder=""
-                            name="july"
-                            v-model="july"
-                            :error="emailError"
-                          />
-                        </div>
-                        <div>
-                          <Textinput
-                            label="August"
-                            type="text"
-                            placeholder=""
-                            name="august"
-                            v-model="august"
-                            :error="emailError"
-                          />
-                        </div>
-                        <div>
-                          <Textinput
-                            label="September"
-                            type="text"
-                            placeholder=""
-                            name="september"
-                            v-model="september"
-                            :error="emailError"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <p class="mt-2 font-medium text-green-600">4th Quarter</p>
-                      <div class="grid grid-cols-3 gap-4">
-                        <div>
-                          <Textinput
-                            label="October"
-                            type="text"
-                            placeholder=""
-                            name="october"
-                            v-model="october"
-                            :error="emailError"
-                          />
-                        </div>
-                        <div>
-                          <Textinput
-                            label="November"
-                            type="text"
-                            placeholder=""
-                            name="november"
-                            v-model="november"
-                            :error="emailError"
-                          />
-                        </div>
-                        <div>
-                          <Textinput
-                            label="December"
-                            type="text"
-                            placeholder=""
-                            name="december"
-                            v-model="december"
-                            :error="emailError"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <template v-slot:footer>
-                    <Button
-                      text="Close"
-                      btnClass="btn-outline-dark "
-                      @click="$refs.modal1.closeModal()"
-                    />
-                  </template>
-                </Modal>
-                <Modal
                   title="Remove Item"
                   label="Item Remove"
                   labelClass="btn-outline-success"
-                  ref="modal2"
+                  ref="removeItemModal"
                 >
                   <p><b>Are you sure you want to remove item?</b></p>
 
@@ -281,12 +124,12 @@
                     <Button
                       text="Close"
                       btnClass="btn-outline-dark "
-                      @click="$refs.modal2.closeModal()"
+                      @click="$refs.removeItemModal.closeModal()"
                     />
                     <Button
                       text="Yes, remove"
                       btnClass="btn-success "
-                      @click="$refs.modal2.closeModal()"
+                      @click="$refs.removeItemModal.closeModal();  submitDelete()"
                     />
                   </template>
                 </Modal>
@@ -327,9 +170,18 @@ import Button from "@/components/Button";
 import Modal from "@/components/Modal/Modal";
 import Textinput from "@/components/Textinput";
 
+import Select from "@/components/Select";
+
 import { MenuItem } from "@headlessui/vue";
 import { advancedTable } from "../../constant/basic-tablle-data";
 //import fullname1 from "@/assets/images/all-img/customer_1.png";
+
+import { useRouter } from "vue-router";
+import { useToast } from "vue-toastification";
+
+import axios from 'axios';
+
+import { apiEndPoint } from "../../constant/data";
 
 export default {
   components: {
@@ -342,6 +194,7 @@ export default {
     Modal,
     Button,
     Textinput,
+    Select,
     MenuItem,
   },
 
@@ -351,7 +204,13 @@ export default {
       password: "",
       emailError: "",
       passwordError: "",
-      ppmp_id: this.$route.query.id,
+      pr_no: this.$route.query.id,
+      pr_items: [],
+      approved_ppmp_items: [],
+      approved_ppmp_items_selection: [],
+      selectedPrItem: {
+        id: ""
+      },
       advancedTable: [
         {
           id: 1,
@@ -368,37 +227,23 @@ export default {
       pageRange: 5,
       searchTerm: "",
 
-      options: [
-        {
-          value: "1",
-          label: "1",
-        },
-        {
-          value: "3",
-          label: "3",
-        },
-        {
-          value: "5",
-          label: "5",
-        },
-      ],
       columns: [
         {
           label: "Item No.",
-          field: "item_num",
+          field: "item_id",
         },
         {
           label: "Unit",
-          field: "item_unit",
+          field: "unit",
         },
 
         {
           label: "Item Description",
-          field: "item_desc",
+          field: "item_description",
         },
         {
           label: "Quantity",
-          field: "quantity",
+          field: "qty",
         },
         {
           label: "Unit Cost",
@@ -413,19 +258,125 @@ export default {
           field: "action",
         },
       ],
+      selected: {
+        id: "",
+        pr_no: this.$route.query.id
+      },
+      options: [
+        {
+          value: "option1",
+          label: "Option 1",
+        },
+        {
+          value: "option2",
+          label: "Option 2",
+        },
+        {
+          value: "option3",
+          label: "Option 3",
+        },
+      ],
     };
   },
-
   methods: {
-    fillFields: function (value1, value2) {
-      this.email = value1;
-      this.password = value2;
+    useToken: function () {
+      const token = JSON.parse(localStorage.jwt);
+      if(token){
+        axios.defaults.headers = {
+          accept: "application/json",
+          Authorization: `Bearer ${token}`
+        }  
+      }
     },
 
-    save: function () {
-      this.emailError = "Email doesn't exist";
+    getItems: function() {
+      this.useToken();
+
+      axios.get(apiEndPoint + "/api/pr_items/" + this.pr_no)
+        .then((response) => {
+          this.pr_items = response.data
+        })
+        .catch((error) => {
+
+        });
     },
+
+    getApprovedPpmp: function() {
+      const user = JSON.parse(localStorage.activeUser);
+      this.useToken();
+
+      axios.get(apiEndPoint + "/api/approved_ppmp/" + user.department_name)
+        .then((response) => {
+          this.approved_ppmp_items = response.data;
+          this.approved_ppmp_items.forEach((approved_items) => {
+            let setItem = { label: approved_items.code + ' | ' +approved_items.general_desc + ' | ' + approved_items.quantity + ' ' +  approved_items.unit, value: approved_items.id }
+            
+            this.approved_ppmp_items_selection.push(setItem)
+          });
+        })
+        .catch((error) => {
+
+        });
+    },
+
+    selectDelete: function(id){
+      this.selectedPrItem.id = id
+    },
+
+    submitItem: function() {
+      const toast = useToast();
+      this.useToken()
+
+      axios.post(apiEndPoint + '/api/submit_pr_items', this.selected)
+        .then((response) => {
+          // router.push("/app/ppmprecords");
+          // router.back();
+          // router.push("/app/request-items-for-pr?id=" + response.data.id);
+          toast.success("Data saved.", {
+            timeout: 2000,
+          });
+          this.getItems();
+        })
+        .catch((error) => {
+          toast.error("Operation failed.", {
+            timeout: 2000,
+          });
+          console.log(error)
+        });
+
+    },
+
+    submitDelete: function() {
+      const toast = useToast();
+
+      const token = JSON.parse(localStorage.jwt);
+      if(token){
+        axios.defaults.headers = {
+          accept: "application/json",
+          Authorization: `Bearer ${token}`
+        }  
+      }
+
+      axios.delete(apiEndPoint + '/api/remove_pr_items/' + this.selectedPrItem.id)
+        .then((response) => {
+          // router.push("/app/system-users");
+          this.getItems();
+          toast.success(" Data removed.", {
+            timeout: 2000,
+          });
+        })
+        .catch((error) => {
+          toast.error(" Operation failed.", {
+            timeout: 2000,
+          });
+        });
+    }
   },
+
+  mounted () {
+    this.getItems()
+    this.getApprovedPpmp()
+  }
 };
 </script>
 <style lang="scss" scoped></style>

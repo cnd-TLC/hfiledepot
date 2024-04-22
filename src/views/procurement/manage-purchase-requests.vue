@@ -11,18 +11,11 @@
           prependIcon="heroicons-outline:search"
           merged
         />
-        <Button
-          icon="heroicons-outline:plus-sm"
-          text="Submit New Purchase Request"
-          btnClass=" btn-dark font-normal btn-sm"
-          iconClass="text-lg"
-          link="submit-pr"
-        />
       </div>
 
       <vue-good-table
         :columns="columns"
-        styleClass=" vgt-table bordered centered align-middle"
+        styleClass=" vgt-table bordered centered"
         :rows="purchase_requests"
         :pagination-options="{
           enabled: true,
@@ -76,28 +69,47 @@
             </span>
           </span>
           <span v-if="props.column.field == 'action'">
-            <div class="space-y-1 rtl:space-x-reverse">
+            <div class="space-y-1 rtl:space-x-reverse justify-center">
               <Button
                 text="Preview"
                 btnClass=" btn-light font-normal btn-sm block-btn"
                 @click="$refs.printPreview.openModal(); setModalData(props.row.department_name, props.row.pr_no, props.row.date_of_request, props.row.section, props.row.fpp, props.row.fund)"
               />
-              <Button
-                text="Request Items"
-                btnClass=" btn-light font-normal btn-sm block-btn"
-                :link="'request-items-for-pr?id=' + props.row.pr_no"
+              <Button 
+                text="Mark as Received" 
+                btnClass="btn-dark font-normal btn-sm " 
+                @click="$refs.markReceiveModal.openModal(); setReceiveId(props.row.pr_no)"
               />
-              <Button
-                text="Update"
-                btnClass=" btn-light font-normal btn-sm block-btn"
-                :link="'update-pr?id=' + props.row.pr_no"
-              />
-              <Button
-                text="Remove"
-                btnClass=" btn-danger font-normal btn-sm block-btn"
-                @click="$refs.deleteModal.openModal(); selectDelete(props.row.pr_no)"
-              />
-              
+              <Modal
+                title="Mark as Received"
+                label="Received"
+                labelClass="btn-outline-success"
+                ref="markReceiveModal"
+              >
+                <p><b>Mark this Purchase Request record as RECEIVED?</b></p>
+
+                <template v-slot:footer>
+                  <Button
+                    text="Close"
+                    btnClass="btn-outline-dark "
+                    @click="$refs.markReceiveModal.closeModal()"
+                  />
+                  <form @submit.prevent="submitReceive">
+                      <Textinput
+                        type="hidden"
+                        placeholder=""
+                        name="december"
+                        disabled
+                        v-model="selectedPR.pr_no"
+                      />
+                      <Button
+                        text="Yes, mark as received"
+                        btnClass="btn-success "
+                        @click="$refs.markReceiveModal.closeModal(); markReceived()"
+                      />
+                    </form>
+                </template>
+              </Modal>
               <Modal
                 title="Purchase Request"
                 label="Print Preview"
@@ -221,32 +233,12 @@
                   <Button
                     text="Print"
                     btnClass="btn-success "
-                    @click="printModalContent(props.row.department_name, props.row.pr_no, props.row.date_of_request, props.row.section, props.row.fpp, props.row.fund)"
+                    @click="printModalContent"
                   />
                 </template>
               </Modal>
 
-              <Modal
-                title="Cancel Request"
-                label="Item Remove"
-                labelClass="btn-outline-success"
-                ref="deleteModal"
-              >
-                <p><b>Are you sure you want to cancel request?</b></p>
-
-                <template v-slot:footer>
-                  <Button
-                    text="Close"
-                    btnClass="btn-outline-dark "
-                    @click="$refs.deleteModal.closeModal()"
-                  />
-                  <Button
-                    text="Yes, cancel"
-                    btnClass="btn-dark "
-                    @click="$refs.deleteModal.closeModal(); submitDelete()"
-                  />
-                </template>
-              </Modal>
+              
             </div>
           </span>
         </template>
@@ -273,9 +265,6 @@
   </div>
 </template>
 <script>
-import { PDFDocument, rgb } from 'pdf-lib';
-import { saveAs } from 'file-saver';
-
 import Dropdown from "@/components/Dropdown";
 import Card from "@/components/Card";
 import Icon from "@/components/Icon";
@@ -285,18 +274,23 @@ import Pagination from "@/components/Pagination";
 import Button from "@/components/Button";
 import Modal from "@/components/Modal/Modal";
 import Textinput from "@/components/Textinput";
+import Fileinput from "@/components/Fileinput";
 
 import { MenuItem } from "@headlessui/vue";
 import { advancedTable } from "../../constant/basic-tablle-data";
 import fullname1 from "@/assets/images/all-img/customer_1.png";
 
+import { useField, useForm } from "vee-validate";
+import * as yup from "yup";
+
+import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 
 import axios from 'axios';
 
 import { apiEndPoint } from "../../constant/data";
 
-import pdf from "@/assets/templates/pr.pdf";
+import { ref } from 'vue';
 
 export default {
   components: {
@@ -305,6 +299,7 @@ export default {
     Dropdown,
     Icon,
     Tooltip,
+    Fileinput,
     Card,
     Modal,
     Button,
@@ -314,9 +309,7 @@ export default {
 
   data() {
     return {
-      selectedPpmp: {
-        id: ""
-      },
+      
       email: "",
       password: "",
       emailError: "",
@@ -334,6 +327,10 @@ export default {
         section: "",
         fpp: "",
         fund: ""
+      },
+      selectedPR: {
+        pr_no: "",
+        note: ""
       },
 
       options: [
@@ -390,48 +387,12 @@ export default {
   },
 
   methods: {
-    async printModalContent(department_name, pr_no, date_of_request, section, fpp, fund) {
-      try {
-        const response = await axios.get(pdf, { responseType: 'blob' });
-
-        if (response.status !== 200) {
-          throw new Error('Failed to fetch PDF');
-        }
-
-        const existingPdfBytes = await response.data.arrayBuffer(); 
-
-        const pdfDoc = await PDFDocument.load(existingPdfBytes);
-        
-        let fields = pdfDoc.getForm().getFields();
-        fields = fields.map((f) => f.getName());
-        const form = pdfDoc.getForm();
-        form.getTextField(fields[0]).setText(department_name);
-        form.getTextField(fields[1]).setText(pr_no.toString());
-        form.getTextField(fields[2]).setText(section);
-        form.getTextField(fields[3]).setText(fpp);
-        form.getTextField(fields[4]).setText(date_of_request);
-        form.getTextField(fields[5]).setText('Php ' + fund.toString());
-        // form.getTextField(fields[6]).setText(cash-avail);
-        // form.getTextField(fields[7]).setText(cash-avail-desig);
-        // form.getTextField(fields[8]).setText(mayor-name);
-        form.getTextField(fields[9]).setText('Lorem Ipsum');
-
-        pdfDoc.getForm().flatten();
-        const pdfBytesWithFieldsFilled = await pdfDoc.save();
-        let pdfBytes = pdfBytesWithFieldsFilled;
-
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        saveAs(blob, pr_no + '-pr.pdf');
-
-      } catch (error) {
-        console.error('Error filling PDF:', error);
-      }
+    printModalContent() {
+      window.print();
     },
 
-    selectDelete: function(id){
-      this.selectedPpmp.id = id
-      console.log(id)
-      console.log(this.selectedPpmp.id)
+    setReceiveId: function (id) {
+      this.selectedPR.pr_no = String(id)
     },
 
     setModalData(department_name, pr_no, date_of_request, section, fpp, fund){
@@ -477,10 +438,10 @@ export default {
         });
     },
 
-    submitDelete: function() {
-      const toast = useToast();
-
+    markReceived: function () {
       const token = JSON.parse(localStorage.jwt);
+      const toast = useToast();
+      
       if(token){
         axios.defaults.headers = {
           accept: "application/json",
@@ -488,21 +449,22 @@ export default {
         }  
       }
 
-      axios.delete(apiEndPoint + '/api/remove_purchase_request/' + this.selectedPpmp.id)
+      axios.post(apiEndPoint + "/api/pr_approve", this.selectedPR)
         .then((response) => {
-          // router.push("/app/system-users");
-          this.getPr();
-          toast.success(" Data removed.", {
+          // router.push("/app/ppmprecords");
+          // router.back();
+          toast.success("Data saved.", {
             timeout: 2000,
           });
         })
         .catch((error) => {
-          console.log(error.data)
-          toast.error(" Operation failed.", {
+          toast.error("Operation failed.", {
             timeout: 2000,
           });
+          console.log(error)
         });
     }
+
   },
 
   mounted () {

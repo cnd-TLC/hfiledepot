@@ -12,11 +12,10 @@
           merged
         />
       </div>
-
       <vue-good-table
         :columns="columns"
         styleClass=" vgt-table bordered centered"
-        :rows="advancedTable"
+        :rows="ppmp"
         :pagination-options="{
           enabled: true,
           perPage: perpage,
@@ -57,77 +56,25 @@
               :to="`view-items?id=` + props.row.id"
               class="text-info-500 hover:text-warning-500"
             >
-              {{ props.row.manageitems }}
+              Check Items
             </router-link>
           </span>
           <span v-if="props.column.field == 'action'">
             <div class="flex space-x-3 rtl:space-x-reverse">
-              <!--Tooltip placement="top" arrow theme="dark">
-                <template #button>
-                  <div class="action-btn" @click="$refs.modal1.openModal()">
-                    <Icon icon="heroicons:eye" />
-                  </div>
-                </template>
-                <span> View</span>
-              </Tooltip-->
+              
 
-              <Tooltip placement="top" arrow theme="dark">
-                <template #button>
-                  <div class="action-btn" @click="$refs.modal2.openModal()">
-                    <Button text="Mark as Received" btnClass="btn-dark btn-sm " />
-                  </div>
-                </template>
-                <span>Receive</span>
-              </Tooltip>
+              
+              <Button 
+                text="Mark as Received" 
+                btnClass="btn-dark font-normal btn-sm " 
+                @click="$refs.markReceiveModal.openModal(); setReceiveId(props.row.id)"
+              />
 
-              <Modal
-                title="View User Details"
-                label="User Details"
-                labelClass="btn-outline-success"
-                ref="modal1"
-              >
-                <div class="flex flex-row">
-                  <div class="w-1/2">
-                    <!-- Personal info goes here -->
-                    <p><b>Name:</b></p>
-                    <p><b>Email Address:</b></p>
-                    <p><b>Phone:</b></p>
-                    <!-- Other personal info fields -->
-                    <div class="border-b border-gray-300 my-4"></div>
-                    <p><b>Department:</b></p>
-                    <p><b>Assigned Office:</b></p>
-                    <div class="border-b border-gray-300 my-4"></div>
-                    <p><b>System User Role:</b></p>
-                    <p><b>Status:</b></p>
-                  </div>
-                  <div class="w-1/2">
-                    <!-- Values go here -->
-                    <p>John Doe</p>
-                    <p>john.doe@example.com</p>
-                    <p>123-456-7890</p>
-                    <!-- Other value fields -->
-                    <div class="border-b border-gray-300 my-4"></div>
-                    <p>----</p>
-                    <p>----</p>
-                    <div class="border-b border-gray-300 my-4"></div>
-                    <p>----</p>
-                    <p>----</p>
-                  </div>
-                </div>
-
-                <template v-slot:footer>
-                  <Button
-                    text="Close"
-                    btnClass="btn-outline-dark "
-                    @click="$refs.modal1.closeModal()"
-                  />
-                </template>
-              </Modal>
               <Modal
                 title="Mark as Received"
                 label="Received"
                 labelClass="btn-outline-success"
-                ref="modal2"
+                ref="markReceiveModal"
               >
                 <p><b>Mark this PPMP record as RECEIVED?</b></p>
 
@@ -135,13 +82,22 @@
                   <Button
                     text="Close"
                     btnClass="btn-outline-dark "
-                    @click="$refs.modal2.closeModal()"
+                    @click="$refs.markReceiveModal.closeModal()"
                   />
-                  <Button
-                    text="Yes, mark as received"
-                    btnClass="btn-success "
-                    @click="$refs.modal2.closeModal()"
-                  />
+                  <form @submit.prevent="submitReceive">
+                      <Textinput
+                        type="hidden"
+                        placeholder=""
+                        name="december"
+                        disabled
+                        v-model="selectedPpmp.ppmp_id"
+                      />
+                      <Button
+                        text="Yes, mark as received"
+                        btnClass="btn-success "
+                        @click="$refs.markReceiveModal.closeModal(); markReceived()"
+                      />
+                    </form>
                 </template>
               </Modal>
             </div>
@@ -182,7 +138,18 @@ import Textinput from "@/components/Textinput";
 
 import { MenuItem } from "@headlessui/vue";
 import { advancedTable } from "../../constant/basic-tablle-data";
-//import fullname1 from "@/assets/images/all-img/customer_1.png";
+
+import { useField, useForm } from "vee-validate";
+import * as yup from "yup";
+
+import { useRoute } from "vue-router";
+import { useToast } from "vue-toastification";
+
+import axios from 'axios';
+
+import { apiEndPoint } from "../../constant/data";
+
+import { ref } from 'vue';
 
 export default {
   components: {
@@ -218,6 +185,10 @@ export default {
       perpage: 10,
       pageRange: 5,
       searchTerm: "",
+      ppmp: [],
+      selectedPpmp: {
+        ppmp_id: ""
+      },
 
       options: [
         {
@@ -240,21 +211,21 @@ export default {
         //  },
         {
           label: "Calendar Year",
-          field: "calendaryear",
+          field: "calendar_year",
         },
         {
           label: "Project Title",
-          field: "projectTitle",
+          field: "project_title",
         },
 
         {
           label: "PMO/End-User/Department",
-          field: "endUser",
+          field: "pmo_end_user_dept",
         },
 
         {
           label: "Source of Fund",
-          field: "fundsource",
+          field: "source_of_fund",
         },
         {
           label: "Items",
@@ -269,15 +240,61 @@ export default {
   },
 
   methods: {
-    fillFields: function (value1, value2) {
-      this.email = value1;
-      this.password = value2;
+    getPpmp: function () {
+      const user = JSON.parse(localStorage.activeUser);
+      const token = JSON.parse(localStorage.jwt);
+      if(token){
+        axios.defaults.headers = {
+          accept: "application/json",
+          Authorization: `Bearer ${token}`
+        }  
+      }
+
+      axios.get(apiEndPoint + "/api/ppmps/" + user.department_name)
+        .then((response) => {
+          this.ppmp = response.data;
+          // console.log(this.ppmp)
+        })
+        .catch((error) => {
+
+        });
     },
 
-    save: function () {
-      this.emailError = "Email doesn't exist";
+    setReceiveId: function (id) {
+      this.selectedPpmp.ppmp_id = String(id)
     },
+
+    markReceived: function () {
+      const token = JSON.parse(localStorage.jwt);
+      const toast = useToast();
+      
+      if(token){
+        axios.defaults.headers = {
+          accept: "application/json",
+          Authorization: `Bearer ${token}`
+        }  
+      }
+
+      axios.post(apiEndPoint + "/api/ppmp_approve", this.selectedPpmp)
+        .then((response) => {
+          // router.push("/app/ppmprecords");
+          // router.back();
+          toast.success("Data saved.", {
+            timeout: 2000,
+          });
+        })
+        .catch((error) => {
+          toast.error("Operation failed.", {
+            timeout: 2000,
+          });
+          console.log(error)
+        });
+    }
   },
+
+  mounted() {
+    this.getPpmp();
+  }
 };
 </script>
 <style lang="scss" scoped></style>

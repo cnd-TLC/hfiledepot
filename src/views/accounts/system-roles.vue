@@ -82,33 +82,19 @@
           </span>
 
           <span v-if="props.column.field == 'action'">
-            <div class="flex space-x-3 rtl:space-x-reverse">
-             
-
-              <Tooltip placement="top" arrow theme="dark">
-                <template #button>
-                  <div class="action-btn">
-                    <RouterLink :to="'system-roles-edit?id=' + props.row.id">
-                      <Icon icon="heroicons:pencil-square" />
-                    </RouterLink>
-                  </div>
-                </template>
-                <span>Edit</span>
-              </Tooltip>
-              <Tooltip placement="top" arrow theme="danger-500">
-                <template #button>
-                  <div
-                  class="action-btn"
-                  @click="
-                    $refs.deleteModal.openModal(); selectDelete(props.row.id);
-                  "
-                >
-                  <Icon icon="heroicons:trash" />
-                </div>
-                </template>
-                <span>Delete</span>
-              </Tooltip>
-              
+            <div class=" space-y-1 rtl:space-x-reverse">
+              <Button
+                text="Update"
+                btnClass=" btn-light font-normal btn-sm block-btn"
+                :link="'system-roles-edit?id=' + props.row.id"
+              />
+              <Button
+                text="Remove"
+                btnClass="btn-danger font-normal btn-sm block-btn"
+                @click="
+                  $refs.deleteModal.openModal(); selectDelete(props.row.id);
+                "
+              />
             </div>
           </span>
         </template>

@@ -37,15 +37,20 @@ export const menuItems = [
       //   childlink: "purchase-request",
       // },
       {
-        childtitle: "List of Requests",
+        childtitle: "Purchase Requests",
         childlink: "request-list",
       },
       {
-        childtitle: "Create PPMP",
+        childtitle: "PR for Approval",
+        childlink: "manage-purchase-requests",
+      },
+      
+      {
+        childtitle: "Manage PPMP",
         childlink: "ppmprecords",
       },
       {
-        childtitle: "Manage PPMP Records",
+        childtitle: "PPMP for Approval",
         childlink: "manageppmprecords",
       },
     ],

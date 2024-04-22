@@ -77,7 +77,14 @@
                 </div>
               </div>
             </span>
-
+            <span v-if="props.column.field == 'quantity'" class="block w-full">
+              <span class="text-sm text-slate-600 dark:text-slate-300 capitalize" v-if="props.row.quantity != null">
+                {{ props.row.quantity }} {{ props.row.unit }}
+              </span>
+              <span class="text-sm text-slate-600 dark:text-slate-300 capitalize" v-else>
+                N/A
+              </span>
+            </span>
             <span v-if="props.column.field == 'est_budget'" class="block w-full">
               <span class="text-sm text-slate-600 dark:text-slate-300 capitalize">
                 ₱ {{ props.row.est_budget }}
@@ -420,6 +427,9 @@ export default {
         {
           label: "Mode",
           field: "mode_of_procurement",
+        },{
+          label: "Quantity",
+          field: "quantity",
         },
         {
           label: "Est. Budget",
@@ -447,7 +457,7 @@ export default {
     getPpmp: function() {
       this.useToken();
 
-      axios.get(apiEndPoint + "/api/ppmps/" + this.$route.query.id)
+      axios.get(apiEndPoint + "/api/specificPpmps/" + this.$route.query.id)
         .then((response) => {
           this.selectedPpmp.calendar_year = response.data["calendar_year"];
           this.selectedPpmp.project_title = response.data["project_title"];

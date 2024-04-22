@@ -114,8 +114,7 @@ export default {
     // No need to define rules for fields
 
     const { value: username, errorMessage: usernameError } = useField("username");
-    const { value: password, errorMessage: passwordError } =
-      useField("password");
+    const { value: password, errorMessage: passwordError } = useField("password");
 
     const onSubmit = handleSubmit((values) => {
       axios.get(apiEndPoint + "/sanctum/csrf-cookie").then(async() => {

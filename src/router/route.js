@@ -185,7 +185,16 @@ const routes = [
           groupParent: "Procurement",
         },
       },
-
+      {
+        path: "manage-purchase-requests",
+        name: "PR-Approval",
+        component: () => import("@/views/procurement/manage-purchase-requests.vue"),
+        meta: {
+          hide: false,
+          //breadcrumbs > >
+          groupParent: "Procurement",
+        },
+      },
 
 
       
@@ -229,6 +238,16 @@ const routes = [
         meta: {
           hide: false,
           activeLink: "Procurement",
+          //breadcrumbs > >
+          groupParent: "Procurement",
+        },
+      },
+      {
+        path: "request-items-for-pr/:id?",
+        name: "PR-Request-Items",
+        component: () => import("@/views/procurement/request-items-for-pr.vue"),
+        meta: {
+          hide: false,
           //breadcrumbs > >
           groupParent: "Procurement",
         },
